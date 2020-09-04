@@ -889,3 +889,31 @@ function b64toB64UrlEncoded(str) {
     .replace(/\//g, "_")
     .replace(/=/g, "")
 }
+
+export function parseExample(schema, example, mediaType) {
+  // parse request body
+  if (example && isJSONObject(stringify(example))) {
+    var example = JSON.parse(stringify(example));
+	var _schema = JSON.parse(stringify(schema));
+  	// loop through properties
+    for (var index in schema.properties) {
+      // check for property
+      if (example[index] !== undefined) {
+        if (example[index]) {
+          //update example on schema
+          _schema.properties[index].example = example[index];
+        } else {
+          // remove property; not provided in example
+          delete _schema.properties[index];
+		  delete example[index];
+        }
+      }
+	}
+	// convert to xml if required
+	if (/xml/i.test(mediaType)) {
+		example = stringify(getSampleSchema(_schema, mediaType));
+	}
+  }
+  
+  return example;
+}

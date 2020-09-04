@@ -1,7 +1,8 @@
 import React, { Component } from "react"
 import PropTypes from "prop-types"
-import Im, { Map, List } from "immutable"
+import Im, { Map, List, fromJS } from "immutable"
 import ImPropTypes from "react-immutable-proptypes"
+import { stringify, isJSONObject, parseExample } from "core/utils"
 
 // More readable, just iterate over maps, only
 const eachMap = (iterable, fn) => iterable.valueSeq().filter(Im.Map.isMap).map(fn)
@@ -107,7 +108,30 @@ export default class Parameters extends Component {
     const isExecute = tryItOutEnabled && allowTryItOut
     const isOAS3 = specSelectors.isOAS3()
 
-    const requestBody = operation.get("requestBody")
+	// Rewrite JSON examples
+    var _requestBody = operation.get("requestBody");
+	if (_requestBody) {
+		_requestBody = _requestBody.toJS()
+		if (_requestBody.content) {
+		  for (var contentType in _requestBody.content) {
+			var mediaTypeValue = _requestBody.content[contentType];
+			var schemaForMediaType = mediaTypeValue.schema;
+			var examplesForMediaType = mediaTypeValue.examples
+			if (schemaForMediaType && examplesForMediaType) {
+			  for (var exampleName in examplesForMediaType) {
+				var mediaTypeExampleValue = examplesForMediaType[exampleName].value;
+				if (mediaTypeExampleValue) {
+				  var updatedValue = parseExample(schemaForMediaType, mediaTypeExampleValue, contentType);
+				  _requestBody.content[contentType].examples[exampleName].value = updatedValue;
+				}
+			  }
+			}
+		  }
+		}
+	}
+	
+	const requestBody = fromJS(_requestBody);
+	
     return (
       <div className="opblock-section">
         <div className="opblock-section-header">
@@ -186,7 +210,9 @@ export default class Parameters extends Component {
                   value={oas3Selectors.requestContentType(...pathMethod)}
                   contentTypes={ requestBody.get("content", List()).keySeq() }
                   onChange={(value) => {
-                    oas3Actions.setRequestContentType({ value, pathMethod })
+                    oas3Actions.setRequestContentType({ value, pathMethod });
+					var requestBodyValue=oas3Selectors.requestBodyValue(...pathMethod);
+					oas3Actions.setRequestBodyValue({ requestBodyValue, pathMethod });
                   }}
                   className="body-param-content-type" />
               </label>

@@ -1,15 +1,15 @@
 import React from "react"
 import PropTypes from "prop-types"
 import ImPropTypes from "react-immutable-proptypes"
-import { Map, OrderedMap, List } from "immutable"
-import { getCommonExtensions, getSampleSchema, stringify } from "core/utils"
+import { Map, OrderedMap, List, fromJS } from "immutable"
+import { getCommonExtensions, getSampleSchema, stringify, isJSONObject, parseExample } from "core/utils"
 
 function getDefaultRequestBodyValue(requestBody, mediaType, activeExamplesKey) {
   let mediaTypeValue = requestBody.getIn(["content", mediaType])
   let schema = mediaTypeValue.get("schema").toJS()
   let example =
     mediaTypeValue.get("example") !== undefined
-      ? stringify(mediaTypeValue.get("example"))
+      ? mediaTypeValue.get("example")
       : null
   let currentExamplesValue = mediaTypeValue.getIn([
     "examples",

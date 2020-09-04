@@ -228,6 +228,9 @@ export const sampleXmlFromSchema = (schema, config={}) => {
         if(props[propName].example === undefined && example[propName] !== undefined) {
           props[propName].example = example[propName]
         }
+		if(example[name] !== undefined && example[name][props[propName].xml.name] !== undefined) {
+			props[propName].example = example[name][props[propName].xml.name];
+		}
         let t = sampleXmlFromSchema(props[propName])
         if (Array.isArray(t)) {
           res[displayName] = res[displayName].concat(t)
