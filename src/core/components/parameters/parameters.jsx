@@ -108,30 +108,30 @@ export default class Parameters extends Component {
     const isExecute = tryItOutEnabled && allowTryItOut
     const isOAS3 = specSelectors.isOAS3()
 
-	// Rewrite JSON examples
+    // Rewrite JSON examples
     var _requestBody = operation.get("requestBody");
-	if (_requestBody) {
-		_requestBody = _requestBody.toJS()
-		if (_requestBody.content) {
-		  for (var contentType in _requestBody.content) {
-			var mediaTypeValue = _requestBody.content[contentType];
-			var schemaForMediaType = mediaTypeValue.schema;
-			var examplesForMediaType = mediaTypeValue.examples
-			if (schemaForMediaType && examplesForMediaType) {
-			  for (var exampleName in examplesForMediaType) {
-				var mediaTypeExampleValue = examplesForMediaType[exampleName].value;
-				if (mediaTypeExampleValue) {
-				  var updatedValue = parseExample(schemaForMediaType, mediaTypeExampleValue, contentType);
-				  _requestBody.content[contentType].examples[exampleName].value = updatedValue;
-				}
-			  }
-			}
-		  }
-		}
-	}
-	
-	const requestBody = fromJS(_requestBody);
-	
+    if (_requestBody) {
+        _requestBody = _requestBody.toJS()
+        if (_requestBody.content) {
+          for (var contentType in _requestBody.content) {
+            var mediaTypeValue = _requestBody.content[contentType];
+            var schemaForMediaType = mediaTypeValue.schema;
+            var examplesForMediaType = mediaTypeValue.examples
+            if (schemaForMediaType && examplesForMediaType) {
+              for (var exampleName in examplesForMediaType) {
+                var mediaTypeExampleValue = examplesForMediaType[exampleName].value;
+                if (mediaTypeExampleValue) {
+                  var updatedValue = parseExample(schemaForMediaType, mediaTypeExampleValue, contentType);
+                  _requestBody.content[contentType].examples[exampleName].value = updatedValue;
+                }
+              }
+            }
+          }
+        }
+    }
+    
+    const requestBody = fromJS(_requestBody);
+    
     return (
       <div className="opblock-section">
         <div className="opblock-section-header">
@@ -211,8 +211,9 @@ export default class Parameters extends Component {
                   contentTypes={ requestBody.get("content", List()).keySeq() }
                   onChange={(value) => {
                     oas3Actions.setRequestContentType({ value, pathMethod });
-					var requestBodyValue=oas3Selectors.requestBodyValue(...pathMethod);
-					oas3Actions.setRequestBodyValue({ requestBodyValue, pathMethod });
+                    var requestBodyValue=oas3Selectors.requestBodyValue(...pathMethod);
+                    oas3Actions.setRequestBodyValue({ requestBodyValue, pathMethod });
+                    oas3Actions.initRequestBodyValidateError({ pathMethod })
                   }}
                   className="body-param-content-type" />
               </label>
@@ -222,6 +223,8 @@ export default class Parameters extends Component {
                 specPath={specPath.slice(0, -1).push("requestBody")}
                 requestBody={requestBody}
                 requestBodyValue={oas3Selectors.requestBodyValue(...pathMethod)}
+                requestBodyInclusionSetting={oas3Selectors.requestBodyInclusionSetting(...pathMethod)}
+                requestBodyErrors={oas3Selectors.requestBodyErrors(...pathMethod)}
                 isExecute={isExecute}
                 activeExamplesKey={oas3Selectors.activeExamplesMember(
                   ...pathMethod,
@@ -247,6 +250,13 @@ export default class Parameters extends Component {
                     })
                   }
                   oas3Actions.setRequestBodyValue({ value, pathMethod })
+                }}
+                onChangeIncludeEmpty={(name, value) => {
+                  oas3Actions.setRequestBodyInclusion({
+                    pathMethod,
+                    value,
+                    name,
+                  })
                 }}
                 contentType={oas3Selectors.requestContentType(...pathMethod)}/>
             </div>
