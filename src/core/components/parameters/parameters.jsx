@@ -79,7 +79,7 @@ export default class Parameters extends Component {
   }
 
   render(){
-
+    
     let {
       onTryoutClick,
       onCancelClick,
@@ -96,7 +96,8 @@ export default class Parameters extends Component {
       pathMethod,
       oas3Actions,
       oas3Selectors,
-      operation
+      operation,
+      authSelectors
     } = this.props
 
     const ParameterRow = getComponent("parameterRow")
@@ -258,7 +259,8 @@ export default class Parameters extends Component {
                     name,
                   })
                 }}
-                contentType={oas3Selectors.requestContentType(...pathMethod)}/>
+                contentType={oas3Selectors.requestContentType(...pathMethod)}
+                authorized={authSelectors.authorized()}/>
             </div>
           </div>
         }

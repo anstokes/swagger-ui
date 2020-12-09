@@ -39,8 +39,8 @@ export default class HighlightCode extends Component {
   }
 
   render () {
-    let { value, className, downloadable, getConfigs, canCopy } = this.props
-
+    let { value, className, downloadable, getConfigs, canCopy, authSelectors } = this.props
+    
     const config = getConfigs ? getConfigs() : {syntaxHighlight: {activated: true, theme: "agate"}}
 
     className = className || ""

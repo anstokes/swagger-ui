@@ -12,10 +12,18 @@ export default class Curl extends React.Component {
   }
 
   render() {
-    let { request, getConfigs } = this.props
+    let { request, getConfigs, authSelectors } = this.props
     let curl = curlify(request)
-
     const config = getConfigs()
+
+    const getValue = () => {
+      let authorized = authSelectors.authorized()
+      return authorized && authorized.getIn(["API Key", "value"])
+    }
+
+    if(curl != null && getValue() != undefined) {
+      curl = curl.replace('userAccessKeyPlaceholder', getValue())
+    }
 
     const curlBlock = get(config, "syntaxHighlight.activated")
       ? <SyntaxHighlighter

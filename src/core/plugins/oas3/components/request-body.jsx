@@ -3,6 +3,7 @@ import PropTypes from "prop-types"
 import ImPropTypes from "react-immutable-proptypes"
 import { Map, OrderedMap, List, fromJS } from "immutable"
 import { getCommonExtensions, getSampleSchema, stringify, isEmptyValue, isJSONObject, parseExample } from "core/utils"
+import { useEffect } from "react"
 
 function getDefaultRequestBodyValue(requestBody, mediaType, activeExamplesKey) {
   let mediaTypeValue = requestBody.getIn(["content", mediaType])
@@ -50,6 +51,7 @@ const RequestBody = ({
   onChangeIncludeEmpty,
   activeExamplesKey,
   updateActiveExamplesKey,
+  authorized
 }) => {
   const handleFile = (e) => {
     onChange(e.target.files[0])
@@ -89,8 +91,13 @@ const RequestBody = ({
   const handleExamplesSelect = (key /*, { isSyntheticChange } */) => {
     updateActiveExamplesKey(key)
   }
-  requestBodyErrors = List.isList(requestBodyErrors) ? requestBodyErrors : List()
 
+  const getValue = () => {
+    return authorized && authorized.getIn(["API Key", "value"])
+  }
+
+  requestBodyErrors = List.isList(requestBodyErrors) ? requestBodyErrors : List()
+  
   if(!mediaTypeValue.size) {
     return null
   }
@@ -114,6 +121,10 @@ const RequestBody = ({
     return <Input type={"file"} onChange={handleFile} />
   }
 
+  if(requestBodyValue != null && getValue() != undefined) {
+    requestBodyValue = requestBodyValue.replace('userAccessKeyPlaceholder', getValue(activeExamplesKey))
+  }
+
   if (
     isObjectContent &&
     (
@@ -126,7 +137,7 @@ const RequestBody = ({
     const ParameterExt = getComponent("ParameterExt")
     const bodyProperties = schemaForMediaType.get("properties", OrderedMap())
     requestBodyValue = Map.isMap(requestBodyValue) ? requestBodyValue : OrderedMap()
-
+   
     return <div className="table-container">
       { requestBodyDescription &&
         <Markdown source={requestBodyDescription} />
@@ -287,6 +298,7 @@ RequestBody.propTypes = {
   specPath: PropTypes.array.isRequired,
   activeExamplesKey: PropTypes.string,
   updateActiveExamplesKey: PropTypes.func,
+  authSelectors: PropTypes.func,
 }
 
 export default RequestBody

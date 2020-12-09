@@ -72,6 +72,7 @@ export default class Responses extends React.Component {
       method,
       oas3Selectors,
       oas3Actions,
+      authSelectors
     } = this.props
     let defaultCode = defaultStatusCode( responses )
 
@@ -108,7 +109,8 @@ export default class Responses extends React.Component {
                                                 specSelectors={ specSelectors }
                                                 path={ this.props.path }
                                                 method={ this.props.method }
-                                                displayRequestDuration={ displayRequestDuration } />
+                                                displayRequestDuration={ displayRequestDuration }
+                                                authSelectors={ authSelectors } />
                                   <h4>Responses</h4>
                                 </div>
 

@@ -1,5 +1,6 @@
 import React from "react"
 import PropTypes from "prop-types"
+import { connect } from "react-redux"
 
 export default class ApiKeyAuth extends React.Component {
   static propTypes = {
@@ -25,7 +26,6 @@ export default class ApiKeyAuth extends React.Component {
 
   getValue () {
     let { name, authorized } = this.props
-
     return authorized && authorized.getIn([name, "value"])
   }
 
