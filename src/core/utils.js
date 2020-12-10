@@ -809,12 +809,20 @@ export const isEmptyValue = (value) => {
   return false
 }
 
-export function parseExample(schema, example, mediaType) {
+export function parseExample(schema, example, mediaType, accesskey = false, accountNumber = false) {
+
+  if(accesskey === false || (typeof(accesskey) === "undefined" || accesskey === 'undefined')) {
+    accesskey = "userAccessKeyPlaceholder"
+  }
+  if(accountNumber === false || (typeof(accountNumber) === "undefined" || accountNumber === 'undefined')) {
+    accountNumber = "userAccessNumberPlaceholder"
+  }
+
   // parse request body
   if (example && isJSONObject(stringify(example))) {
     var example = JSON.parse(stringify(example));
-	var _schema = JSON.parse(stringify(schema));
-  	// loop through properties
+    var _schema = JSON.parse(stringify(schema));
+      // loop through properties
     for (var index in schema.properties) {
       // check for property
       if (example[index] !== undefined) {
@@ -824,14 +832,24 @@ export function parseExample(schema, example, mediaType) {
         } else {
           // remove property; not provided in example
           delete _schema.properties[index];
-		  delete example[index];
+          delete example[index];
         }
       }
-	}
-	// convert to xml if required
-	if (/xml/i.test(mediaType)) {
-		example = stringify(getSampleSchema(_schema, mediaType));
-	}
+    }
+    // convert to xml if required
+    if (/xml/i.test(mediaType)) {
+        example = stringify(getSampleSchema(_schema, mediaType));
+    }
+    // modify the JSON
+    if ((typeof(example) == 'object') && (typeof(accesskey) !== 'undefined') && (accesskey || accountNumber)) {
+      example.accesskey = accesskey;
+      example.accountNumber = accountNumber;
+    }
+  }
+  // modify the xml
+  if (example && (typeof(example) == 'string') && (accesskey || accountNumber)) {
+      example = example.replace('userAccessKeyPlaceholder', accesskey);
+      example = example.replace('userAccessNumberPlaceholder', accountNumber);
   }
   
   return example;

@@ -46,6 +46,12 @@ export default class Parameters extends Component {
     specPath: [],
   }
 
+  getValue () {
+    let { name, authSelectors } = this.props
+    let authorized = authSelectors.authorized()
+    return authorized && authorized.getIn([name, "value"])
+  }
+
   onChange = ( param, value, isXml ) => {
     let {
       specActions: { changeParamByIdentity },
@@ -76,6 +82,22 @@ export default class Parameters extends Component {
         parametersVisible: false
       })
     }
+  }
+
+   getCookie = (cname) => {
+    var name = cname + "=";
+    var decodedCookie = decodeURIComponent(document.cookie);
+    var ca = decodedCookie.split(';');
+    for(var i = 0; i <ca.length; i++) {
+      var c = ca[i];
+      while (c.charAt(0) == ' ') {
+        c = c.substring(1);
+      }
+      if (c.indexOf(name) == 0) {
+        return c.substring(name.length, c.length);
+      }
+    }
+    return "";
   }
 
   render(){
@@ -122,7 +144,7 @@ export default class Parameters extends Component {
               for (var exampleName in examplesForMediaType) {
                 var mediaTypeExampleValue = examplesForMediaType[exampleName].value;
                 if (mediaTypeExampleValue) {
-                  var updatedValue = parseExample(schemaForMediaType, mediaTypeExampleValue, contentType);
+                  var updatedValue = parseExample(schemaForMediaType, mediaTypeExampleValue, contentType, this.getCookie('accesskey'), this.getCookie('accountNumber'));
                   _requestBody.content[contentType].examples[exampleName].value = updatedValue;
                 }
               }

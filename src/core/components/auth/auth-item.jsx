@@ -21,20 +21,11 @@ export default class Auths extends React.Component {
     } = this.props
     const ApiKeyAuth = getComponent("apiKeyAuth")
     const BasicAuth = getComponent("basicAuth")
-    const BodyAuth = getComponent("bodyAuth")
     let authEl
 
     const type = schema.get("type")
 
     switch(type) {
-      case "body": authEl = <BodyAuth key={ name }
-                                      schema={ schema }
-                                      name={ name }
-                                      errSelectors={ errSelectors }
-                                      authorized={ authorized }
-                                      getComponent={ getComponent }
-                                      onChange={ onAuthChange } />
-        break;
       case "apiKey": authEl = <ApiKeyAuth key={ name }
                                         schema={ schema }
                                         name={ name }
