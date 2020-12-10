@@ -2,7 +2,7 @@ import React, { Component } from "react"
 import PropTypes from "prop-types"
 import Im, { Map, List, fromJS } from "immutable"
 import ImPropTypes from "react-immutable-proptypes"
-import { stringify, isJSONObject, parseExample } from "core/utils"
+import { stringify, isJSONObject, parseExample, replaceValues } from "core/utils"
 
 // More readable, just iterate over maps, only
 const eachMap = (iterable, fn) => iterable.valueSeq().filter(Im.Map.isMap).map(fn)
@@ -84,7 +84,7 @@ export default class Parameters extends Component {
     }
   }
 
-   getCookie = (cname) => {
+  getCookie = (cname) => {
     var name = cname + "=";
     var decodedCookie = decodeURIComponent(document.cookie);
     var ca = decodedCookie.split(';');
@@ -130,7 +130,8 @@ export default class Parameters extends Component {
 
     const isExecute = tryItOutEnabled && allowTryItOut
     const isOAS3 = specSelectors.isOAS3()
-
+    let authorized = authSelectors.authorized();
+    let authorizedValues = authorized.toJS()
     // Rewrite JSON examples
     var _requestBody = operation.get("requestBody");
     if (_requestBody) {
@@ -144,7 +145,7 @@ export default class Parameters extends Component {
               for (var exampleName in examplesForMediaType) {
                 var mediaTypeExampleValue = examplesForMediaType[exampleName].value;
                 if (mediaTypeExampleValue) {
-                  var updatedValue = parseExample(schemaForMediaType, mediaTypeExampleValue, contentType, this.getCookie('accesskey'), this.getCookie('accountNumber'));
+                  var updatedValue = parseExample(schemaForMediaType, mediaTypeExampleValue, contentType, authorizedValues);
                   _requestBody.content[contentType].examples[exampleName].value = updatedValue;
                 }
               }
@@ -152,9 +153,10 @@ export default class Parameters extends Component {
           }
         }
     }
-    
+    // let authorized = authSelectors.authorized();
+    // replaceValues(_requestBody, authorized.toJS());
     const requestBody = fromJS(_requestBody);
-    
+
     return (
       <div className="opblock-section">
         <div className="opblock-section-header">

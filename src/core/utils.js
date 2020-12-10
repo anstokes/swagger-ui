@@ -809,22 +809,36 @@ export const isEmptyValue = (value) => {
   return false
 }
 
-export function parseExample(schema, example, mediaType, accesskey = false, accountNumber = false) {
-
-  if(accesskey === false || (typeof(accesskey) === "undefined" || accesskey === 'undefined')) {
-    accesskey = "userAccessKeyPlaceholder"
+let getCookie = function(name){
+  var cookieArr = document.cookie.split(";");
+  for(var i = 0; i < cookieArr.length; i++) {
+      var cookiePair = cookieArr[i].split("=");
+      if(name == cookiePair[0].trim()) {
+          return decodeURIComponent(cookiePair[1]);
+      }
   }
-  if(accountNumber === false || (typeof(accountNumber) === "undefined" || accountNumber === 'undefined')) {
-    accountNumber = "userAccessNumberPlaceholder"
-  }
+  
+  // Return null if not found
+  return null;
+}
 
+export function parseExample(schema, example, mediaType, authorizedValues) {
+  let replaceValues = []
+  let regstr
   // parse request body
   if (example && isJSONObject(stringify(example))) {
     var example = JSON.parse(stringify(example));
     var _schema = JSON.parse(stringify(schema));
       // loop through properties
     for (var index in schema.properties) {
+      if(getCookie(index) !== null) {
+        // replaceValues[index] = getCookie(index)
+        regstr+=`|${index}`
+
+      }
       // check for property
+      
+      // console.log(getCookie(index))
       if (example[index] !== undefined) {
         if (example[index]) {
           //update example on schema
@@ -841,16 +855,61 @@ export function parseExample(schema, example, mediaType, accesskey = false, acco
         example = stringify(getSampleSchema(_schema, mediaType));
     }
     // modify the JSON
-    if ((typeof(example) == 'object') && (typeof(accesskey) !== 'undefined') && (accesskey || accountNumber)) {
-      example.accesskey = accesskey;
-      example.accountNumber = accountNumber;
+    if ((typeof(example) == 'object') && (typeof(example) !== 'undefined')) {
+      
+      
+      // text = text.replace(replace[0], '"accesskey":"hisham"')
+      // example = JSON.parse(text)
+      regstr = regstr.replace('undefined', '')
+      regstr = regstr.replace('||', '|')
+      var i = 0;
+      let string;
+      // console.log(regstr)
+      // let regex = new RegExp('"(', item, ')":"((\\"|[^"])*)"', i)
+      // console.log(regex);
+      
+      // let text = JSON.stringify(example)
+      // let replace = text.match(regex)
     }
   }
   // modify the xml
-  if (example && (typeof(example) == 'string') && (accesskey || accountNumber)) {
-      example = example.replace('userAccessKeyPlaceholder', accesskey);
-      example = example.replace('userAccessNumberPlaceholder', accountNumber);
+  if (example && (typeof(example) == 'string')) {
+      // example = example.replace('userAccessKeyPlaceholder', accesskey);
+      // example = example.replace('userAccessNumberPlaceholder', accountNumber);
+  }
+  // console.log(replaceValues)
+  // replaceValues.forEach((el, i) => {
+  //   console.log(el)
+  // })
+
+  for(let item in authorizedValues) {
+    // modify the JSON
+    if ((typeof(example) == 'object') && (typeof(example) !== 'undefined')) {
+      // text = text.replace(replace[0], '"accesskey":"hisham"')
+      // example = JSON.parse(text)
+      regstr = regstr.replace('undefined', '')
+      regstr = regstr.replace('||', '|')
+      var i = 0;
+      let string;
+      // console.log(regstr)
+      // let regex = new RegExp('"(', item, ')":"((\\"|[^"])*)"', i)
+      // console.log(regex);
+      console.log(item);
+      
+      // let text = JSON.stringify(example)
+      // let replace = text.match(regex)
+    }
+
+    // modify the xml
+    if (example && (typeof(example) == 'string')) {
+      // example = example.replace('userAccessKeyPlaceholder', accesskey);
+      // example = example.replace('userAccessNumberPlaceholder', accountNumber);
+    }
   }
   
   return example;
+}
+
+export function replaceValues(requestBody, schema) {
+
 }

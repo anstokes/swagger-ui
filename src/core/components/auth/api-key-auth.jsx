@@ -40,20 +40,6 @@ export default class ApiKeyAuth extends React.Component {
     onChange(newState)
   }
 
-  addToCookie = () => {
-    document.cookie = `accountNumber=${this.state.accountNumber};`
-  }
-
-  accountNumberOnChange =(e) => {
-    let { onChange } = this.props
-    let value = e.target.value
-    let newState = Object.assign({}, this.state, { accountNumber: value })
-    
-    console.log(newState)
-    this.setState(newState)
-    // onChange(newState)
-  }
-
   render() {
     let { schema, getComponent, errSelectors, name } = this.props
     const Input = getComponent("Input")
@@ -63,10 +49,8 @@ export default class ApiKeyAuth extends React.Component {
     const Markdown = getComponent("Markdown", true)
     const JumpToPath = getComponent("JumpToPath", true)
     let value = this.getValue()
-    let accountNumber = this.state.accountNumber;
     if(schema.get('in') == 'body') {
-      document.cookie = `accesskey=${value};`
-      document.cookie = `accountNumber=${this.state.accountNumber}`
+      document.cookie = `${schema.get('name')}=${value};`
     }
     
     let errors = errSelectors.allErrors().filter( err => err.get("authId") === name)
@@ -87,12 +71,6 @@ export default class ApiKeyAuth extends React.Component {
         </Row>
         <Row>
           <p>In: <code>{ schema.get("in") }</code></p>
-        </Row>
-        <Row>
-          <label>Account Number:</label>
-          {
-            <Col><Input type="text" onChange={ this.accountNumberOnChange }/></Col>
-          }
         </Row>
         <Row>
           <label>Value:</label>
