@@ -823,19 +823,27 @@ let getCookie = function(name){
 }
 
 export function parseExample(schema, example, mediaType, authorizedValues) {
-  let replaceValues = []
-  let regstr
+  let tempExample = stringify(example);
+
+  if(( authorizedValues || authorizedValues !== undefined) && example !== undefined) {
+    for (let [name, value] of Object.entries(authorizedValues)) {
+      let authKey = value.schema.name;
+      let authValue = value.value;
+
+      let regex = new RegExp('"([' + authKey + '"]+)"\\s*:\\s*"([^"]+)",?')
+      tempExample = tempExample.replace(regex, '"' + authKey +'": "' + authValue + '",');
+    }
+  }
+
+  example = tempExample;
+
   // parse request body
   if (example && isJSONObject(stringify(example))) {
     var example = JSON.parse(stringify(example));
     var _schema = JSON.parse(stringify(schema));
+
       // loop through properties
     for (var index in schema.properties) {
-      if(getCookie(index) !== null) {
-        // replaceValues[index] = getCookie(index)
-        regstr+=`|${index}`
-
-      }
       // check for property
       
       // console.log(getCookie(index))
@@ -854,62 +862,24 @@ export function parseExample(schema, example, mediaType, authorizedValues) {
     if (/xml/i.test(mediaType)) {
         example = stringify(getSampleSchema(_schema, mediaType));
     }
-    // modify the JSON
-    if ((typeof(example) == 'object') && (typeof(example) !== 'undefined')) {
-      
-      
-      // text = text.replace(replace[0], '"accesskey":"hisham"')
-      // example = JSON.parse(text)
-      regstr = regstr.replace('undefined', '')
-      regstr = regstr.replace('||', '|')
-      var i = 0;
-      let string;
-      // console.log(regstr)
-      // let regex = new RegExp('"(', item, ')":"((\\"|[^"])*)"', i)
-      // console.log(regex);
-      
-      // let text = JSON.stringify(example)
-      // let replace = text.match(regex)
-    }
   }
-  // modify the xml
-  if (example && (typeof(example) == 'string')) {
-      // example = example.replace('userAccessKeyPlaceholder', accesskey);
-      // example = example.replace('userAccessNumberPlaceholder', accountNumber);
-  }
-  // console.log(replaceValues)
-  // replaceValues.forEach((el, i) => {
-  //   console.log(el)
-  // })
+  
+// modify the xml
+if (example && (typeof(example) == 'string')) {
+  if(( authorizedValues || authorizedValues !== undefined) && example !== undefined) {
+    for (let [name, value] of Object.entries(authorizedValues)) {
+      let authKey = value.schema.name;
+      let authValue = value.value;
 
-  for(let item in authorizedValues) {
-    // modify the JSON
-    if ((typeof(example) == 'object') && (typeof(example) !== 'undefined')) {
-      // text = text.replace(replace[0], '"accesskey":"hisham"')
-      // example = JSON.parse(text)
-      regstr = regstr.replace('undefined', '')
-      regstr = regstr.replace('||', '|')
-      var i = 0;
-      let string;
-      // console.log(regstr)
-      // let regex = new RegExp('"(', item, ')":"((\\"|[^"])*)"', i)
-      // console.log(regex);
-      console.log(item);
-      
-      // let text = JSON.stringify(example)
-      // let replace = text.match(regex)
-    }
-
-    // modify the xml
-    if (example && (typeof(example) == 'string')) {
-      // example = example.replace('userAccessKeyPlaceholder', accesskey);
-      // example = example.replace('userAccessNumberPlaceholder', accountNumber);
+      let regex = new RegExp('<' + authKey + '>[\\s\\S]*?<\/' + authKey + '>')
+      tempExample = tempExample.replace(regex, '<' + authKey + '>' + authValue + '<\/' + authKey + '>');
+      console.log(regex)
+      console.log(tempExample)
     }
   }
   
-  return example;
+  example = tempExample;
 }
 
-export function replaceValues(requestBody, schema) {
-
+  return example;
 }
