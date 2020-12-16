@@ -829,13 +829,21 @@ export function parseExample(schema, example, mediaType, authorizedValues) {
     for (let [name, value] of Object.entries(authorizedValues)) {
       let authKey = value.schema.name;
       let authValue = value.value;
+      
+      // modify the xml
+      if (example && (typeof(example) == 'string')) {
+        let regex = new RegExp('<' + authKey + '>[\\s\\S]*?<\/' + authKey + '>')
+        tempExample = tempExample.replace(regex, '<' + authKey + '>' + authValue + '<\/' + authKey + '>')
+      }
 
-      let regex = new RegExp('"([' + authKey + '"]+)"\\s*:\\s*"([^"]+)",?')
-      tempExample = tempExample.replace(regex, '"' + authKey +'": "' + authValue + '",');
+      if (typeof(example) == 'object') {
+        let regex = new RegExp('"([' + authKey + '"]+)"\\s*:\\s*"([^"]+)",?')
+        tempExample = tempExample.replace(regex, '"' + authKey +'": "' + authValue + '",')
+      }
     }
   }
 
-  example = tempExample;
+  example = tempExample
 
   // parse request body
   if (example && isJSONObject(stringify(example))) {
@@ -864,22 +872,5 @@ export function parseExample(schema, example, mediaType, authorizedValues) {
     }
   }
   
-// modify the xml
-if (example && (typeof(example) == 'string')) {
-  if(( authorizedValues || authorizedValues !== undefined) && example !== undefined) {
-    for (let [name, value] of Object.entries(authorizedValues)) {
-      let authKey = value.schema.name;
-      let authValue = value.value;
-
-      let regex = new RegExp('<' + authKey + '>[\\s\\S]*?<\/' + authKey + '>')
-      tempExample = tempExample.replace(regex, '<' + authKey + '>' + authValue + '<\/' + authKey + '>');
-      console.log(regex)
-      console.log(tempExample)
-    }
-  }
-  
-  example = tempExample;
-}
-
   return example;
 }
