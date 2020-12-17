@@ -50,7 +50,7 @@ export default class ResponseBody extends React.PureComponent {
   }
 
   render() {
-    let { content, contentType, url, headers={}, getConfigs, getComponent, authSelectors} = this.props
+    let { content, contentType, url, headers={}, getConfigs, getComponent} = this.props
     const { parsedContent } = this.state
     const HighlightCode = getComponent("highlightCode")
     const downloadName = "response_" + new Date().getTime()

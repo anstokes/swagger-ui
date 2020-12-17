@@ -126,7 +126,7 @@ const RequestBody = ({
     const ParameterExt = getComponent("ParameterExt")
     const bodyProperties = schemaForMediaType.get("properties", OrderedMap())
     requestBodyValue = Map.isMap(requestBodyValue) ? requestBodyValue : OrderedMap()
-    console.log(getComponent);
+
     return <div className="table-container">
       { requestBodyDescription &&
         <Markdown source={requestBodyDescription} />
