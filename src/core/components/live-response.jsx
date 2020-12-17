@@ -48,7 +48,7 @@ export default class LiveResponse extends React.Component {
   }
 
   render() {
-    const { response, getComponent, getConfigs, displayRequestDuration, specSelectors, path, method, authSelectors } = this.props
+    const { response, getComponent, getConfigs, displayRequestDuration, specSelectors, path, method } = this.props
     const { showMutatedRequest } = getConfigs()
 
     const curlRequest = showMutatedRequest ? specSelectors.mutatedRequestFor(path, method) : specSelectors.requestFor(path, method)
@@ -71,7 +71,7 @@ export default class LiveResponse extends React.Component {
 
     return (
       <div>
-        { curlRequest && <Curl request={ curlRequest } getConfigs={ getConfigs } authSelectors={ authSelectors }/> }
+        { curlRequest && <Curl request={ curlRequest } getConfigs={ getConfigs } /> }
         { url && <div>
             <h4>Request URL</h4>
             <div className="request-url">
@@ -111,8 +111,7 @@ export default class LiveResponse extends React.Component {
                                        url={ url }
                                        headers={ headers }
                                        getConfigs={ getConfigs }
-                                       getComponent={ getComponent }
-                                       authSelectors={ authSelectors }/>
+                                       getComponent={ getComponent }/>
                        : null
                 }
                 {
