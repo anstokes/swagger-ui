@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect } from "react"
 import PropTypes from "prop-types"
 import ImPropTypes from "react-immutable-proptypes"
 import { Map, OrderedMap, List, fromJS } from "immutable"
@@ -50,6 +50,7 @@ const RequestBody = ({
   onChangeIncludeEmpty,
   activeExamplesKey,
   updateActiveExamplesKey,
+  authSelectors
 }) => {
   const handleFile = (e) => {
     onChange(e.target.files[0])
@@ -126,7 +127,6 @@ const RequestBody = ({
     const ParameterExt = getComponent("ParameterExt")
     const bodyProperties = schemaForMediaType.get("properties", OrderedMap())
     requestBodyValue = Map.isMap(requestBodyValue) ? requestBodyValue : OrderedMap()
-    console.log(getComponent);
     return <div className="table-container">
       { requestBodyDescription &&
         <Markdown source={requestBodyDescription} />
@@ -204,6 +204,10 @@ const RequestBody = ({
       </table>
     </div>
   }
+
+  // Make the replacements
+  let authorizedValues = authSelectors.authorized().toJS();
+  requestBodyValue = parseExample(mediaTypeValue.get("schema"), requestBodyValue, contentType, authorizedValues);
 
   return <div>
     { requestBodyDescription &&

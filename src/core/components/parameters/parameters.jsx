@@ -108,8 +108,10 @@ export default class Parameters extends Component {
 
     const isExecute = tryItOutEnabled && allowTryItOut
     const isOAS3 = specSelectors.isOAS3()
-    let authorized = authSelectors.authorized();
+
+    let authorized = authSelectors.authorized()
     let authorizedValues = authorized.toJS()
+	
     // Rewrite JSON examples
     var _requestBody = operation.get("requestBody");
     if (_requestBody) {
