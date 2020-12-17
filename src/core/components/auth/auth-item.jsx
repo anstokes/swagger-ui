@@ -21,6 +21,7 @@ export default class Auths extends React.Component {
     } = this.props
     const ApiKeyAuth = getComponent("apiKeyAuth")
     const BasicAuth = getComponent("basicAuth")
+
     let authEl
 
     const type = schema.get("type")

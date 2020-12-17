@@ -89,6 +89,7 @@ export default class Operation extends PureComponent {
     let operationScheme = specSelectors.operationScheme(path, method)
     let isShownKey = ["operations", tag, operationId]
     let extensions = getExtensions(operation)
+
     const Responses = getComponent("responses")
     const Parameters = getComponent( "parameters" )
     const Execute = getComponent( "execute" )
@@ -221,7 +222,6 @@ export default class Operation extends PureComponent {
                     specSelectors={ specSelectors }
                     oas3Actions={oas3Actions}
                     oas3Selectors={oas3Selectors}
-                    authSelectors={ authSelectors }
                     specActions={ specActions }
                     produces={specSelectors.producesOptionsFor([path, method]) }
                     producesValue={ specSelectors.currentProducesFor([path, method]) }

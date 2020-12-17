@@ -1,6 +1,5 @@
 import React from "react"
 import PropTypes from "prop-types"
-import { connect } from "react-redux"
 
 export default class ApiKeyAuth extends React.Component {
   static propTypes = {
@@ -16,18 +15,17 @@ export default class ApiKeyAuth extends React.Component {
     super(props, context)
     let { name, schema } = this.props
     let value = this.getValue()
-    let accountNumber;
 
     this.state = {
       name: name,
       schema: schema,
-      value: value,
-      accountNumber: accountNumber
+      value: value
     }
   }
 
   getValue () {
     let { name, authorized } = this.props
+
     return authorized && authorized.getIn([name, "value"])
   }
 
@@ -49,10 +47,6 @@ export default class ApiKeyAuth extends React.Component {
     const Markdown = getComponent("Markdown", true)
     const JumpToPath = getComponent("JumpToPath", true)
     let value = this.getValue()
-    if(schema.get('in') == 'body') {
-      document.cookie = `${schema.get('name')}=${value};`
-    }
-    
     let errors = errSelectors.allErrors().filter( err => err.get("authId") === name)
 
     return (

@@ -57,27 +57,6 @@ export default class Execute extends Component {
       // loading spinner
       this.props.onExecute()
     }
-
-    let requestBody = operation.get('requestBody')
-    let content = requestBody.get('content')
-    let json = content.get('application/json').get('examples')
-    let xml = content.get('application/xml').get('examples')
-    for (let item of json) {
-
-      if (item[1].get('value').get('consignment') != undefined) {
-        console.log(item[1].get('value').get('consignment'))
-      } else {
-        item[1].get('value').set('accesskey', 'hisham')
-        console.log(item[1].get('value').get('accesskey'))
-      }
-      
-      // console.log(item[0])
-    }
-    // console.log(content.getIn([
-    //   "examples",
-    //   activeExamplesKey,
-    //   "value"
-    // ]))
     specActions.execute({ operation, path, method })
   }
 

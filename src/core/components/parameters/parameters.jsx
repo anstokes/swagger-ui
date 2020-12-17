@@ -2,7 +2,7 @@ import React, { Component } from "react"
 import PropTypes from "prop-types"
 import Im, { Map, List, fromJS } from "immutable"
 import ImPropTypes from "react-immutable-proptypes"
-import { stringify, isJSONObject, parseExample, replaceValues } from "core/utils"
+import { stringify, isJSONObject, parseExample } from "core/utils"
 
 // More readable, just iterate over maps, only
 const eachMap = (iterable, fn) => iterable.valueSeq().filter(Im.Map.isMap).map(fn)
@@ -46,12 +46,6 @@ export default class Parameters extends Component {
     specPath: [],
   }
 
-  getValue () {
-    let { name, authSelectors } = this.props
-    let authorized = authSelectors.authorized()
-    return authorized && authorized.getIn([name, "value"])
-  }
-
   onChange = ( param, value, isXml ) => {
     let {
       specActions: { changeParamByIdentity },
@@ -84,24 +78,8 @@ export default class Parameters extends Component {
     }
   }
 
-  getCookie = (cname) => {
-    var name = cname + "=";
-    var decodedCookie = decodeURIComponent(document.cookie);
-    var ca = decodedCookie.split(';');
-    for(var i = 0; i <ca.length; i++) {
-      var c = ca[i];
-      while (c.charAt(0) == ' ') {
-        c = c.substring(1);
-      }
-      if (c.indexOf(name) == 0) {
-        return c.substring(name.length, c.length);
-      }
-    }
-    return "";
-  }
-
   render(){
-    
+
     let {
       onTryoutClick,
       onCancelClick,
@@ -154,10 +132,8 @@ export default class Parameters extends Component {
         }
     }
     
-    // let authorized = authSelectors.authorized();
-    // replaceValues(_requestBody, authorized.toJS());
     const requestBody = fromJS(_requestBody);
-
+    
     return (
       <div className="opblock-section">
         <div className="opblock-section-header">
@@ -284,8 +260,7 @@ export default class Parameters extends Component {
                     name,
                   })
                 }}
-                contentType={oas3Selectors.requestContentType(...pathMethod)}
-                authorized={authSelectors.authorized()}/>
+                contentType={oas3Selectors.requestContentType(...pathMethod)}/>
             </div>
           </div>
         }
