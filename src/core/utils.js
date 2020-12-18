@@ -811,7 +811,7 @@ export const isEmptyValue = (value) => {
 
 export function parseExample(schema, example, mediaType, authorizedValues) {
   let tempExample = stringify(example);
-
+  console.log(authorizedValues)
   if(( authorizedValues || authorizedValues !== undefined) && example !== undefined) {
     for (let [name, value] of Object.entries(authorizedValues)) {
       let authKey = value.schema.name;
